@@ -34,3 +34,21 @@ class UserLoginSerializer(serializers.ModelSerializer):
         model = Users
         fields = ['email_or_username','password']
         
+        
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['id','username','first_name','last_name','email','gender','password']     
+        
+        
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ['id','username','first_name','last_name','email','gender','password','is_admin']     
+    
+    
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users     
+        fields = ['id','username','first_name','last_name','email','gender','password','is_admin']     
