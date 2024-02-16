@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import Users
+from account.models import Users,Companies,Employees
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -52,3 +52,21 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users     
         fields = ['id','username','first_name','last_name','email','gender','password','is_admin']     
+
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
+    class Meta:
+        model = Companies
+        fields = '__all__'
+        
+        
+class EmployeeSerializer(serializers.ModelSerializer):     
+    id = serializers.ReadOnlyField()
+    company_id = serializers.PrimaryKeyRelatedField(queryset=Companies.objects.all(), source='company', write_only=True)
+    company = CompanySerializer(read_only=True)
+    class Meta:
+        model = Employees
+        fields = '__all__'
+  

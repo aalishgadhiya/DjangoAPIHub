@@ -162,7 +162,7 @@ AUTH_USER_MODEL = 'account.Users'
 # jwt setting 
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=40),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 
     "AUTH_HEADER_TYPES": ("Bearer",),
@@ -189,6 +189,6 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3080",
-    "http://127.0.0.1:3000",
     "http://192.168.1.15:8000", 
+    "http://192.168.1.15:3000", 
 ]

@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer
+from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer,CompanySerializer,EmployeeSerializer
 from account.renderers import UserRenderer,CustomJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from account.models import Users
+from account.models import Users,Companies,Employees
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -77,6 +77,7 @@ class UserProfileView(APIView):
                         
         
 
+# user list-view ---------
 class UserListView(APIView):
     renderer_classes = [CustomJSONRenderer] 
     permission_classes = [IsAuthenticated]       
@@ -117,15 +118,119 @@ class UserDetailView(APIView):
             return Response({'message':'User Not Found'},status=status.HTTP_404_NOT_FOUND)
         
     def delete(self,request,user_id):
-        user = Users.objects.get(id=user_id)
-        user.delete()
-        return Response({'message':'User Delete Success'},status=status.HTTP_204_NO_CONTENT)
-            
+        try: 
+            user = Users.objects.get(id=user_id)
+            user.delete()
+            return Response({'message':'user deleted successfully'},status=status.HTTP_204_NO_CONTENT)
         
+        except Users.DoesNotExist:
+            return Response({'message':'User Not Found'},status=status.HTTP_404_NOT_FOUND) 
+        
+    
+       
+# Company List View ----------
+class CompanyListView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    def get(self,request):
+        companies = Companies.objects.all()
+        serializer = CompanySerializer(companies,many=True)
+        return Response({'Companies':serializer.data},status=status.HTTP_200_OK)
+    def post(self,request):
+        serializer = CompanySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save() 
+            return Response({'Company':serializer.data},status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            
+                        
+class CompanyDetailView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+
+    def get(self,request,company_id):
+        try:
+            company = Companies.objects.get(id=company_id)
+            serializer = CompanySerializer(company)
+            return Response({'Company':serializer.data},status=status.HTTP_200_OK)
+        
+        except Companies.DoesNotExist:
+            return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)
+        
+    
+    def patch(self,request,company_id):
+        try:
+            company = Companies.objects.get(id=company_id)
+            data = request.data
+            serializer = CompanySerializer(company,data=data,partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'Company':serializer.data}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Companies.DoesNotExist:
+            return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)   
+        
+        
+    def delete(self,request,company_id):
+        try:
+            company = Companies.objects.get(id=company_id)
+            company.delete()     
+            return Response({'message':'Company deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+        
+        except Companies.DoesNotExist:
+            return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)   
         
                 
-        
 
+
+ # Employee List View ---------
+ 
+class EmployeeListView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    def get(self,request):
+        employee = Employees.objects.all()
+        serializer = EmployeeSerializer(employee,many=True)
+        return Response({'Employees':serializer.data},status=status.HTTP_200_OK)
+    def post(self,request):
+        serializer = EmployeeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'Employee':serializer.data},status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+      
+        
+class EmployeeDetailView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    def get(self,request,employee_id):
+        try:
+            employee = Employees.objects.get(id=employee_id)
+            serializer = EmployeeSerializer(employee)
+            return Response({'Employee':serializer.data},status=status.HTTP_200_OK)      
+        
+        except Employees.DoesNotExist:
+            return Response({'message':'Employee Not Found'},status=status.HTTP_404_NOT_FOUND)    
         
         
+    def patch(self,request,employee_id):
+        try:
+            employee = Employees.objects.get(id=employee_id)
+            data = request.data 
+            serializer = EmployeeSerializer(employee,data=data,partial=True)   
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'Employee':serializer.data}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+        except Employees.DoesNotExist:
+            return Response({'message':'Employee Not Found'},status=status.HTTP_404_NOT_FOUND)    
+        
+    def delete(self,request,employee_id):
+        try:
+            employee = Employees.objects.get(id=employee_id)
+            employee.delete()
+            return Response({'message':'Employee deleted successfully'},status=status.HTTP_204_NO_CONTENT)        
+         
+        except Employees.DoesNotExist:
+            return Response({'message':'Employee Not Found'},status=status.HTTP_404_NOT_FOUND)   
+    
