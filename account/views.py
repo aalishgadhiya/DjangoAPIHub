@@ -131,6 +131,8 @@ class UserDetailView(APIView):
 # Company List View ----------
 class CompanyListView(APIView):
     renderer_classes = [CustomJSONRenderer]
+    permission_classes = [IsAuthenticated]   
+
     def get(self,request):
         companies = Companies.objects.all()
         serializer = CompanySerializer(companies,many=True)
@@ -187,6 +189,8 @@ class CompanyDetailView(APIView):
  
 class EmployeeListView(APIView):
     renderer_classes = [CustomJSONRenderer]
+    permission_classes = [IsAuthenticated]   
+
     def get(self,request):
         employee = Employees.objects.all()
         serializer = EmployeeSerializer(employee,many=True)

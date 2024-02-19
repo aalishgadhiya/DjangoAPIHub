@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',cast=bool, default=False)  
 
-ALLOWED_HOSTS = ['192.168.1.15','2401:4900:1c80:5b9:d906:8dba:56d6:66be2401:4900:1c80:5b9:6e9:7c1d:c85:f2fffe80::5b29:46de:5f72:b6c6']
+ALLOWED_HOSTS = ['192.168.1.20','fe80::5b29:46de:5f72:b6c6']
 
 
 # Application definition
@@ -189,6 +189,6 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3080",
-    "http://192.168.1.15:8000", 
-    "http://192.168.1.15:3000", 
+    "http://192.168.1.20:8000", 
+    "http://192.168.1.20:3000", 
 ]
