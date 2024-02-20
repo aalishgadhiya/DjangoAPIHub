@@ -24,7 +24,7 @@ class CustomJSONRenderer(renderers.JSONRenderer):
         respo = renderer_context['response']
         status_code = respo.status_code
         response = ''
-        if 'ErrorDetail' in str(data) or 'non_fields_errors' in str(data) or status_code == 404:
+        if 'ErrorDetail' in str(data) or 'non_fields_errors' in str(data) or status_code == 404 or status_code == 401:
             response = json.dumps({'success':False,'status':status_code,'errors':data})
         else:
             response = json.dumps({'success':True,'status':status_code,'data':data})   

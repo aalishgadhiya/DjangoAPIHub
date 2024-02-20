@@ -10,7 +10,6 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
-
 # Creating tokens manually 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -19,6 +18,8 @@ def get_tokens_for_user(user):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+    
+
     
     
 
@@ -65,13 +66,7 @@ class UserLoginView(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST,headers={'message':'Login Failed'})    
             
   
-class UserLogoutView(APIView):
-    renderer_classes = [UserRenderer]
-    permission_classes = [IsAuthenticated] 
-    
-    def post(self,request):
-        print('hello-=-=-=-=-=-=-=-=-=--=-=-=-=-',request)
-                
+
             
        
 class UserProfileView(APIView):
