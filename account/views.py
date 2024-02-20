@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer,CompanySerializer,EmployeeSerializer
+from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer,CompanySerializer,EmployeeSerializer,CompanyEmployeeSerializer
 from account.renderers import UserRenderer,CustomJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
@@ -64,7 +64,14 @@ class UserLoginView(APIView):
             return Response({'non_fields_errors':['Email/Username or password is not valid']},status=status.HTTP_401_UNAUTHORIZED,headers={'message':'Login Failed'})
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST,headers={'message':'Login Failed'})    
             
-            
+  
+class UserLogoutView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated] 
+    
+    def post(self,request):
+        print('hello-=-=-=-=-=-=-=-=-=--=-=-=-=-',request)
+                
             
        
 class UserProfileView(APIView):
@@ -134,7 +141,12 @@ class CompanyListView(APIView):
     permission_classes = [IsAuthenticated]   
 
     def get(self,request):
-        companies = Companies.objects.all()
+        type_filter = request.query_params.get('type')
+        if type_filter:
+            companies = Companies.objects.filter(type=type_filter)
+        else:    
+            companies = Companies.objects.all()
+            
         serializer = CompanySerializer(companies,many=True)
         return Response({'Companies':serializer.data},status=status.HTTP_200_OK)
     def post(self,request):
@@ -184,6 +196,20 @@ class CompanyDetailView(APIView):
         
                 
 
+
+
+class CompanyEmployeeListView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    permission_classes = [IsAuthenticated]   
+    def get(self,request,company_id):
+        try:
+            company = Companies.objects.get(id=company_id)
+            employees = Employees.objects.filter(company=company_id)
+            serializer = CompanyEmployeeSerializer(employees, many=True)
+            return Response({'employees':serializer.data},status=status.HTTP_200_OK)
+        except Companies.DoesNotExist:
+            return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)
+                
 
  # Employee List View ---------
  
@@ -237,4 +263,9 @@ class EmployeeDetailView(APIView):
          
         except Employees.DoesNotExist:
             return Response({'message':'Employee Not Found'},status=status.HTTP_404_NOT_FOUND)   
+
+
+
+
+
     

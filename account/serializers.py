@@ -60,7 +60,7 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Companies
         fields = '__all__'
-        
+               
         
 class EmployeeSerializer(serializers.ModelSerializer):     
     id = serializers.ReadOnlyField()
@@ -69,4 +69,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employees
         fields = '__all__'
-  
+
+
+class CompanyEmployeeSerializer(serializers.ModelSerializer):
+    company = serializers.StringRelatedField()
+    class Meta:
+      model = Employees
+      fields = '__all__'

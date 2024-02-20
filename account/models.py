@@ -72,7 +72,7 @@ class Users(AbstractBaseUser):
     
     
 class Companies(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50,unique=True)
     location = models.CharField(max_length=50)
     about = models.TextField()
     type_choices={
@@ -90,7 +90,7 @@ class Companies(models.Model):
     
 class Employees(models.Model):
     name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50)
+    email = models.EmailField(max_length=50,unique=True)
     address = models.CharField(max_length=200)
     phone = models.CharField(max_length=10)
     about = models.TextField()
@@ -100,7 +100,7 @@ class Employees(models.Model):
         ('Project Leader','Project Leader')
     }
     position = models.CharField(max_length=50,choices=position_choices)
-    company = models.ForeignKey(Companies,on_delete=models.CASCADE) 
+    company = models.ForeignKey(Companies,related_name='employees',on_delete=models.CASCADE) 
     
     
     def __str__(self) -> str:
