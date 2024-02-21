@@ -9,7 +9,7 @@ from django.contrib.auth.admin import UserAdmin
 class UserModelAdmin(UserAdmin):
 
 
-    list_display = ['id','username','first_name','last_name','email','gender','is_admin']
+    list_display = ['id','username','first_name','last_name','email','gender','is_admin','created','updated']
     list_filter = ["is_admin"]
     fieldsets = [
         ('user Credentials', {"fields": ["email", "password"]}),
@@ -37,14 +37,14 @@ admin.site.register(Users, UserModelAdmin)
 
 
 class CompanyAdmin(admin.ModelAdmin):
-    list_display=('id','name','location','about','type','added_date','active')
+    list_display=('id','name','location','about','type','active','created','updated')
     
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display=('id','name','email','address','phone','about','position','company','department')
+    list_display=('id','name','email','address','phone','about','position','company','department','created','updated')
     
 
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display=('id','name','description','company')
+    list_display=('id','name','description','company','created','updated')
             
             
 admin.site.register(Companies,CompanyAdmin)    

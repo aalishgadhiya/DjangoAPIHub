@@ -40,19 +40,19 @@ class UserLoginSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['id','username','first_name','last_name','email','gender','password']     
+        fields = ['id','username','first_name','last_name','email','gender','password','created','updated']     
         
         
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ['id','username','first_name','last_name','email','gender','password','is_admin']     
+        fields = ['id','username','first_name','last_name','email','gender','password','is_admin','created','updated']     
     
     
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users     
-        fields = ['id','username','first_name','last_name','email','gender','password','is_admin']     
+        fields = ['id','username','first_name','last_name','email','gender','password','is_admin','created','updated']     
 
 
 
@@ -115,6 +115,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
 
 class CompanyEmployeeSerializer(serializers.ModelSerializer):
     company = serializers.StringRelatedField()
+    department = serializers.StringRelatedField()
     class Meta:
       model = Employees
       fields = '__all__'

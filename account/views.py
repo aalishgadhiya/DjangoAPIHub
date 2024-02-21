@@ -7,6 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from account.models import Users,Companies,Employees,Departments
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 
 
@@ -84,8 +85,14 @@ class UserListView(APIView):
     renderer_classes = [CustomJSONRenderer] 
     permission_classes = [IsAuthenticated]       
     def get(self,request):
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
+        
         User_data = Users.objects.all()
-        serializer = UserListSerializer(User_data,many=True)
+        
+        result_page = paginator.paginate_queryset(User_data, request)
+        
+        serializer = UserListSerializer(result_page,many=True)
         return Response({'users':serializer.data},status=status.HTTP_200_OK)  
     
     
@@ -136,14 +143,19 @@ class CompanyListView(APIView):
     permission_classes = [IsAuthenticated]   
 
     def get(self,request):
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
+        
         type_filter = request.query_params.get('type')
         if type_filter:
             companies = Companies.objects.filter(type=type_filter)
         else:    
             companies = Companies.objects.all()
             
-        serializer = CompanySerializer(companies,many=True)
+        result_page = paginator.paginate_queryset(companies,request)    
+        serializer = CompanySerializer(result_page,many=True)
         return Response({'Companies':serializer.data},status=status.HTTP_200_OK)
+    
     def post(self,request):
         serializer = CompanySerializer(data=request.data)
         if serializer.is_valid():
@@ -198,9 +210,14 @@ class CompanyEmployeeListView(APIView):
     permission_classes = [IsAuthenticated]   
     def get(self,request,company_id):
         try:
+            paginator = PageNumberPagination()
+            paginator.page_size = 2
             company = Companies.objects.get(id=company_id)
             employees = Employees.objects.filter(company=company_id)
-            serializer = CompanyEmployeeSerializer(employees, many=True)
+            
+            result_page = paginator.paginate_queryset(employees, request)
+
+            serializer = CompanyEmployeeSerializer(result_page, many=True)
             return Response({'employees':serializer.data},status=status.HTTP_200_OK)
         except Companies.DoesNotExist:
             return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)
@@ -213,8 +230,11 @@ class CompanyDepartmentListView(APIView):
     
     def get(self,request,company_id):
         try:
+            paginator = PageNumberPagination()
+            paginator.page_size = 2
             department = Departments.objects.filter(company=company_id)
-            serializer = CompanyDepartmentSerializer(department,many=True)
+            result_page = paginator.paginate_queryset(department, request)
+            serializer = CompanyDepartmentSerializer(result_page,many=True)
             return Response({'Departments':serializer.data},status=status.HTTP_200_OK)
         except Companies.DoesNotExist:
               return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)  
@@ -226,8 +246,12 @@ class DepartmentEmployeeList(APIView):
      
      def get(self,request,department_id):
          try:
+            paginator = PageNumberPagination()
+            paginator.page_size = 2 
             employee = Employees.objects.filter(department=department_id)
-            serializer = DepartmentEmployeeSerializer(employee,many=True)
+            result_page = paginator.paginate_queryset(employee, request)
+            
+            serializer = DepartmentEmployeeSerializer(result_page,many=True)
             return Response({'Employees':serializer.data},status=status.HTTP_200_OK)
          
          except Departments.DoesNotExist:
@@ -241,8 +265,13 @@ class EmployeeListView(APIView):
     permission_classes = [IsAuthenticated]   
 
     def get(self,request):
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
+        
         employee = Employees.objects.all()
-        serializer = EmployeeSerializer(employee,many=True)
+        
+        result_page = paginator.paginate_queryset(employee, request)
+        serializer = EmployeeSerializer(result_page,many=True)
         return Response({'Employees':serializer.data},status=status.HTTP_200_OK)
     def post(self,request):
         serializer = EmployeeSerializer(data=request.data)
@@ -299,8 +328,12 @@ class DepartmentListView(APIView):
     renderer_classes = [CustomJSONRenderer]
     
     def get(self,request):
+        paginator = PageNumberPagination()
+        paginator.page_size = 2
         departments = Departments.objects.all()
-        serializer = DepartmentSerializer(departments,many=True)
+        
+        result_page = paginator.paginate_queryset(departments   , request)
+        serializer = DepartmentSerializer(result_page,many=True)
         return Response({'Departments':serializer.data},status=status.HTTP_200_OK)
     
     def post(self,request):

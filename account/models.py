@@ -47,7 +47,8 @@ class Users(AbstractBaseUser):
     gender = models.CharField(max_length=1,choices=gender_choices)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    
+    created = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     
     objects = UserManager()
     
@@ -80,7 +81,8 @@ class Companies(models.Model):
         ('Non IT','Non IT')
     }
     type = models.CharField(max_length=100,choices=type_choices)
-    added_date = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
     
     
@@ -93,7 +95,9 @@ class Companies(models.Model):
 class Departments(models.Model):
     name = models.CharField(max_length=50)
     description  = models.TextField()
-    company = models.ForeignKey(Companies,on_delete=models.CASCADE)  
+    company = models.ForeignKey(Companies,on_delete=models.CASCADE) 
+    created = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True) 
     
     def __str__(self) -> str:
         return self.name
@@ -116,6 +120,8 @@ class Employees(models.Model):
     position = models.CharField(max_length=50,choices=position_choices)
     company = models.ForeignKey(Companies,related_name='employees',on_delete=models.CASCADE) 
     department = models.ForeignKey(Departments,on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(auto_now=True)
     
     
     def __str__(self) -> str:
