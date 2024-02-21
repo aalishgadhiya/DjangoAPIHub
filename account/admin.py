@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Users,Companies,Employees
+from account.models import Users,Companies,Employees,Departments
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -40,8 +40,13 @@ class CompanyAdmin(admin.ModelAdmin):
     list_display=('id','name','location','about','type','added_date','active')
     
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display=('id','name','email','address','phone','about','position','company')
+    list_display=('id','name','email','address','phone','about','position','company','department')
     
-        
+
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display=('id','name','description','company')
+            
+            
 admin.site.register(Companies,CompanyAdmin)    
 admin.site.register(Employees,EmployeeAdmin)
+admin.site.register(Departments,DepartmentAdmin)

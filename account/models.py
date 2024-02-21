@@ -88,6 +88,20 @@ class Companies(models.Model):
         return self.name
     
     
+    
+    
+class Departments(models.Model):
+    name = models.CharField(max_length=50)
+    description  = models.TextField()
+    company = models.ForeignKey(Companies,on_delete=models.CASCADE)  
+    
+    def __str__(self) -> str:
+        return self.name
+    
+    
+    
+    
+     
 class Employees(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50,unique=True)
@@ -101,9 +115,9 @@ class Employees(models.Model):
     }
     position = models.CharField(max_length=50,choices=position_choices)
     company = models.ForeignKey(Companies,related_name='employees',on_delete=models.CASCADE) 
+    department = models.ForeignKey(Departments,on_delete=models.CASCADE)
     
     
     def __str__(self) -> str:
         return self.name
         
-    

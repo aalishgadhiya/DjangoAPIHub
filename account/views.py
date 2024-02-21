@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer,CompanySerializer,EmployeeSerializer,CompanyEmployeeSerializer
+from account.serializers import UserRegistrationSerializer,UserLoginSerializer,UserProfileSerializer,UserListSerializer,UserDetailSerializer,CompanySerializer,EmployeeSerializer,CompanyEmployeeSerializer,DepartmentSerializer,CompanyDepartmentSerializer,DepartmentEmployeeSerializer
 from account.renderers import UserRenderer,CustomJSONRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from account.models import Users,Companies,Employees
+from account.models import Users,Companies,Employees,Departments
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -204,6 +204,34 @@ class CompanyEmployeeListView(APIView):
             return Response({'employees':serializer.data},status=status.HTTP_200_OK)
         except Companies.DoesNotExist:
             return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)
+        
+        
+        
+
+class CompanyDepartmentListView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    
+    def get(self,request,company_id):
+        try:
+            department = Departments.objects.filter(company=company_id)
+            serializer = CompanyDepartmentSerializer(department,many=True)
+            return Response({'Departments':serializer.data},status=status.HTTP_200_OK)
+        except Companies.DoesNotExist:
+              return Response({'message':'Company Not Found'},status=status.HTTP_404_NOT_FOUND)  
+          
+          
+          
+class DepartmentEmployeeList(APIView):
+     renderer_classes = [CustomJSONRenderer]      
+     
+     def get(self,request,department_id):
+         try:
+            employee = Employees.objects.filter(department=department_id)
+            serializer = DepartmentEmployeeSerializer(employee,many=True)
+            return Response({'Employees':serializer.data},status=status.HTTP_200_OK)
+         
+         except Departments.DoesNotExist:
+              return Response({'message':'Department Not Found'},status=status.HTTP_404_NOT_FOUND) 
                 
 
  # Employee List View ---------
@@ -240,8 +268,9 @@ class EmployeeDetailView(APIView):
     def patch(self,request,employee_id):
         try:
             employee = Employees.objects.get(id=employee_id)
-            data = request.data 
+            data = request.data        
             serializer = EmployeeSerializer(employee,data=data,partial=True)   
+
             if serializer.is_valid():
                 serializer.save()
                 return Response({'Employee':serializer.data}, status=status.HTTP_201_CREATED)
@@ -262,5 +291,64 @@ class EmployeeDetailView(APIView):
 
 
 
+# departments API 
 
+
+
+class DepartmentListView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    
+    def get(self,request):
+        departments = Departments.objects.all()
+        serializer = DepartmentSerializer(departments,many=True)
+        return Response({'Departments':serializer.data},status=status.HTTP_200_OK)
+    
+    def post(self,request):
+        serializer = DepartmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'Department':serializer.data},status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+class DepartmentDetailView(APIView):
+    renderer_classes = [CustomJSONRenderer]
+    
+    def get(self,request,department_id):
+        try:
+            department = Departments.objects.get(id=department_id)
+            serializer = DepartmentSerializer(department)
+            return Response({'Department':serializer.data},status=status.HTTP_200_OK)
+        
+        except Departments.DoesNotExist:
+            return Response({'message':'Department Not Found'},status=status.HTTP_404_NOT_FOUND)  
+    
+    
+    def patch(self,request,department_id):
+        try:
+            department = Departments.objects.get(id=department_id)
+            data= request.data 
+            serializer = DepartmentSerializer(department,data=data,partial=True)   
+            
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'Department':serializer.data}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
+        
+        except Departments.DoesNotExist:
+            return Response({'message':'Department Not Found'},status=status.HTTP_404_NOT_FOUND)
+        
+    
+    
+    def delete(self,request,department_id):
+        try:
+            department = Departments.objects.get(id=department_id)
+            department.delete()
+            return Response({'message':'Department deleted successfully'},status=status.HTTP_204_NO_CONTENT)
+        
+        except Departments.DoesNotExist:
+            return Response({'message':'Department Not Found'},status=status.HTTP_404_NOT_FOUND) 
+                    
+             
     

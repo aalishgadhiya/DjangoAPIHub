@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from account.models import Users,Companies,Employees
+from account.models import Users,Companies,Employees,Departments
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -62,14 +62,55 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Companies
         fields = '__all__'
                
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    company_id = serializers.PrimaryKeyRelatedField(queryset=Companies.objects.all(), source='company', write_only=True)
+    company = CompanySerializer(read_only=True)
+    class Meta:
+        model = Departments
+        fields = '__all__' 
+        
+        
+    def validate(self, data):
+        company = data.get('company')
+        if company is None:
+            raise serializers.ValidationError('company_id Fields Is Requiered')
+        
+        if company:
+            company_id = company.id
+            department_name = data.get('name')
+            existing_department = Departments.objects.filter(company_id=company_id,name=department_name)
+            
+                            
+            if existing_department.exists():
+                raise serializers.ValidationError('A department with this name already exists in the company.')
+        
+        return data     
+
+
+
         
 class EmployeeSerializer(serializers.ModelSerializer):     
     id = serializers.ReadOnlyField()
     company_id = serializers.PrimaryKeyRelatedField(queryset=Companies.objects.all(), source='company', write_only=True)
-    company = CompanySerializer(read_only=True)
+    # company = CompanySerializer(read_only=True)
+    department = DepartmentSerializer(read_only=True)
+    department_id = serializers.PrimaryKeyRelatedField(queryset=Departments.objects.all(),source='department', write_only=True)
+    
     class Meta:
         model = Employees
-        fields = '__all__'
+        exclude = ['company']
+        
+    def validate(self, data):
+        company = data.get('company')
+        department = data.get('department_id')
+        
+        if company and department:
+            if department.company != company:
+                raise serializers.ValidationError('Department does not belong to the provided company')
+            
+        return data
 
 
 class CompanyEmployeeSerializer(serializers.ModelSerializer):
@@ -77,3 +118,19 @@ class CompanyEmployeeSerializer(serializers.ModelSerializer):
     class Meta:
       model = Employees
       fields = '__all__'
+      
+
+
+class CompanyDepartmentSerializer(serializers.ModelSerializer):
+    company = serializers.StringRelatedField()
+    class Meta:
+        model = Departments
+        fields = '__all__'
+        
+
+class DepartmentEmployeeSerializer(serializers.ModelSerializer):
+    company = serializers.StringRelatedField()
+    department = serializers.StringRelatedField()
+    class Meta:
+        model = Employees
+        fields = '__all__'        
