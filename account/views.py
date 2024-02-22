@@ -88,7 +88,7 @@ class UserListView(APIView):
         paginator = PageNumberPagination()
         paginator.page_size = 2
         
-        User_data = Users.objects.all()
+        User_data = Users.objects.all().order_by('-created')
         
         result_page = paginator.paginate_queryset(User_data, request)
         
