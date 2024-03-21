@@ -74,20 +74,32 @@ class DepartmentSerializer(serializers.ModelSerializer):
         
     def validate(self, data):
         company = data.get('company')
-        if company is None:
-            raise serializers.ValidationError('company_id Fields Is Requiered')
+        name = data.get('name')
         
-        if company:
-            company_id = company.id
-            department_name = data.get('name')
-            existing_department = Departments.objects.filter(company_id=company_id,name=department_name)
-            
-                            
+        # Check if company is provided
+        if company is None:
+            raise serializers.ValidationError('company_id Field Is Required')
+        
+        # Check if department name is provided
+        if name is None:
+            raise serializers.ValidationError('name Field Is Required')
+        
+        # Get department instance if available (for update)
+        instance = self.instance
+        if instance:
+            # If the department name is being updated, check for uniqueness within the company
+            if name != instance.name:
+                existing_department = Departments.objects.exclude(id=instance.id).filter(company=company, name=name)
+                if existing_department.exists():
+                    raise serializers.ValidationError('A department with this name already exists in the company.')
+        
+        # If creating a new department, check if a department with the same name exists in the company
+        else:
+            existing_department = Departments.objects.filter(company=company, name=name)
             if existing_department.exists():
                 raise serializers.ValidationError('A department with this name already exists in the company.')
-        
-        return data     
 
+        return data
 
 
         
@@ -130,8 +142,8 @@ class CompanyDepartmentSerializer(serializers.ModelSerializer):
         
 
 class DepartmentEmployeeSerializer(serializers.ModelSerializer):
-    company = serializers.StringRelatedField()
-    department = serializers.StringRelatedField()
+    # company = CompanySerializer(read_only=True)
+    department = DepartmentSerializer(read_only=True)
     class Meta:
         model = Employees
-        fields = '__all__'        
+        exclude = ['company']       

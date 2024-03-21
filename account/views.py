@@ -34,6 +34,7 @@ class UserRegistrationView(APIView):
             return Response({'token':token},status=status.HTTP_201_CREATED,headers={'message':'Registration success'})
     
         errors = serializer.errors
+        
         if 'username' in errors and 'users with this username already exists.' in errors['username']:
             status_code = status.HTTP_409_CONFLICT
         elif 'email' in errors and 'users with this Email already exists.' in errors['email']:
@@ -86,7 +87,7 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]       
     def get(self,request):
         paginator = PageNumberPagination()
-        paginator.page_size = 2
+        paginator.page_size = 10
         
         User_data = Users.objects.all().order_by('-created')
         
@@ -144,7 +145,7 @@ class CompanyListView(APIView):
 
     def get(self,request):
         paginator = PageNumberPagination()
-        paginator.page_size = 2
+        paginator.page_size = 10
         
         type_filter = request.query_params.get('type')
         if type_filter:
@@ -211,7 +212,7 @@ class CompanyEmployeeListView(APIView):
     def get(self,request,company_id):
         try:
             paginator = PageNumberPagination()
-            paginator.page_size = 2
+            paginator.page_size = 10
             company = Companies.objects.get(id=company_id)
             employees = Employees.objects.filter(company=company_id)
             
@@ -231,7 +232,7 @@ class CompanyDepartmentListView(APIView):
     def get(self,request,company_id):
         try:
             paginator = PageNumberPagination()
-            paginator.page_size = 2
+            paginator.page_size = 10
             department = Departments.objects.filter(company=company_id)
             result_page = paginator.paginate_queryset(department, request)
             serializer = CompanyDepartmentSerializer(result_page,many=True)
@@ -247,7 +248,7 @@ class DepartmentEmployeeList(APIView):
      def get(self,request,department_id):
          try:
             paginator = PageNumberPagination()
-            paginator.page_size = 2 
+            paginator.page_size = 10
             employee = Employees.objects.filter(department=department_id)
             result_page = paginator.paginate_queryset(employee, request)
             
@@ -266,7 +267,7 @@ class EmployeeListView(APIView):
 
     def get(self,request):
         paginator = PageNumberPagination()
-        paginator.page_size = 2
+        paginator.page_size = 10
         
         employee = Employees.objects.all()
         
@@ -304,7 +305,7 @@ class EmployeeDetailView(APIView):
                 serializer.save()
                 return Response({'Employee':serializer.data}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+                                                  
         except Employees.DoesNotExist:
             return Response({'message':'Employee Not Found'},status=status.HTTP_404_NOT_FOUND)    
         
@@ -329,7 +330,7 @@ class DepartmentListView(APIView):
     
     def get(self,request):
         paginator = PageNumberPagination()
-        paginator.page_size = 2
+        paginator.page_size = 10
         departments = Departments.objects.all()
         
         result_page = paginator.paginate_queryset(departments   , request)

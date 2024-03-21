@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',cast=bool, default=False)  
 
-ALLOWED_HOSTS = ['192.168.1.20','fe80::5b29:46de:5f72:b6c6']
+ALLOWED_HOSTS = ['192.168.1.22','2401:4900:1f3e:6ca9:22a6:e2ec:579f:3aa2401:4900:1f3e:6ca9:2630:4240:b73b:f56ffe80::5b29:46de:5f72:b6c6','127.0.0.1']
 
 
 # Application definition
@@ -170,7 +170,7 @@ AUTH_USER_MODEL = 'account.Users'
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=40),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=60),
 
 
     'ROTATE_REFRESH_TOKENS': True,
@@ -202,8 +202,8 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3003",
-    "http://192.168.1.20:8000", 
-    "http://192.168.1.20:3000", 
+    "http://192.168.1.22:8000", 
+    "http://192.168.1.22:3000", 
 ]
 
 
